@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas Drawing and Download</title>
+  <style>
+    #downloadBtn {
+      display: none;
+      /* 初始时隐藏下载按钮 */
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="myCanvas" width="1242" height="1660"></canvas>
+  <button id="downloadBtn">下载图片</button>
+
+  <script>
+    // 获取canvas元素和上下文
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // 加载图片
+    let bgImage = new Image();
+    bgImage.src = 'bg.png'; // 替换为背景图片的实际URL
+    let characterImage = new Image();
+    characterImage.src = 'main.png'; // 替换为人物形象图片的实际URL
+    let maskImage = new Image();
+    maskImage.src = 'mask_star.png'; // 替换为五角星遮罩图片的实际URL
+
+    // 图片加载完成后绘制
+    function draw() {
+      // 绘制背景图片
+      ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+
+      // 绘制标题和副标题
+      const title = '安宫丸的神奇疗效';
+      const subtitle = '带来女性健康的守护';
+      const fontSize = 24; // 根据需要调整字体大小
+      const font = `bold ${fontSize}px Arial`;
+      const color = 'white';
+      const textWidth = ctx.measureText(title).width;
+      const titleX = (canvas.width / 2) - (textWidth / 2);
+      const titleY = 50; // 标题距离顶部的高度
+      const subtitleY = titleY + fontSize + 10; // 副标题距离标题的高度
+
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.font = font;
+      ctx.fillText(title, titleX, titleY);
+      ctx.fillText(subtitle, titleX, subtitleY);
+
+      // 应用遮罩并绘制人物形象图片
+      ctx.save();   // 保存当前状态，以便之后可以恢复
+
+      // 应用遮罩效果前，设置为 destination-in
+      ctx.globalCompositeOperation = 'destination-in';
+
+      ctx.drawImage(maskImage, canvas.width / 2 - maskImage.width / 2, canvas.height / 2 - maskImage.height / 2);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(characterImage, canvas.width / 2 - characterImage.width / 2, canvas.height / 2 - characterImage.height / 2);
+
+
+      // 恢复到之前保存的状态，globalCompositeOperation 将回到 'source-over'
+      ctx.restore();
+    }
+
+    // 绑定图片加载完成事件
+    bgImage.onload = function () {
+      draw();
+      document.getElementById('downloadBtn').style.display = 'block'; // 显示下载按钮
+    };
+
+    // 绑定下载按钮事件
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+      const link = document.createElement('a');
+      link.download = 'canvas-artwork.png';
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  </script>
+</body>
+
+</html>
