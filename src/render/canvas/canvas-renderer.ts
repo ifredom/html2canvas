@@ -188,6 +188,7 @@ export class CanvasRenderer extends Renderer {
             paintOrder.forEach((paintOrderLayer) => {
                 switch (paintOrderLayer) {
                     case PAINT_ORDER_LAYER.FILL:
+                        this.ctx.globalCompositeOperation = styles.mixBlendMode;
                         this.ctx.fillStyle = asString(styles.color);
                         this.renderTextWithLetterSpacing(text, styles.letterSpacing, baseline);
                         const textShadows: TextShadow = styles.textShadow;
@@ -276,6 +277,7 @@ export class CanvasRenderer extends Renderer {
             this.path(path);
             this.ctx.save();
             this.ctx.clip();
+            this.ctx.globalCompositeOperation = container.styles.mixBlendMode;
             this.ctx.drawImage(
                 image,
                 0,
